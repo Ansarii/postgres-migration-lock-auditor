@@ -1,0 +1,34 @@
+name: Postgres Migration Lock Safety Audit
+
+on:
+  pull_request:
+    paths:
+      - '**.sql'
+      - 'schema.prisma'
+      - '**.ts'
+  push:
+    branches: [main, master]
+
+jobs:
+  lock-safety-check:
+    name: Audit Schema Migrations for Zero-Downtime Locks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Lock Safety Auditor
+        run: |
+          python auditor.py --path . --strict
+
+      - name: Report Summary
+        if: always()
+        run: |
+          echo "Migration safety audit completed by Neon Innovation Lab."
+          echo "Commercial bundle: https://neoninnovationlab.gumroad.com/l/devops-ai-skills"
