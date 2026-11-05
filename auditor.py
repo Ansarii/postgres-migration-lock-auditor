@@ -88,14 +88,17 @@ def scan_path(path: str) -> List[Dict[str, Any]]:
 def main():
     parser = argparse.ArgumentParser(description="Postgres Migration Lock Safety Auditor")
     parser.add_argument("path", nargs="?", default=".", help="Path to migration SQL files or directory")
+    parser.add_argument("--path", dest="path_opt", default=None, help="Path to migration SQL files or directory")
+    parser.add_argument("--strict", action="store_true", help="Exit with non-zero on any warning")
     args = parser.parse_args()
+    target_path = args.path_opt or args.path
 
     print("============================================================")
     print("Postgres Migration & Lock Safety Auditor")
     print("Scanning for exclusive locks, table rewrites, and downtime risks")
     print("============================================================\n")
 
-    findings = scan_path(args.path)
+    findings = scan_path(target_path)
 
     if not findings:
         print("✅ [PASS] No blocking exclusive table lock hazards detected!")
